@@ -1,2 +1,2 @@
 # record_server
-record 后端
+record 后端服务器

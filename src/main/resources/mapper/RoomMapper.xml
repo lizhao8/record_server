@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.record.mapper.RoomMapper">
+	<resultMap id="withAnchor" type="Room">
+		<association property="anchor" column="{uid=uid}"
+			select="com.record.mapper.AnchorMapper.getByUid">
+		</association>
+	</resultMap>
+	
+	<select id="getEnableList" resultMap="withAnchor" parameterType="short">
+		select * from
+		room
+		where status = 1
+		and live_status = #{liveStatus}
+	</select>
+</mapper>  

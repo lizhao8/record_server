@@ -1,0 +1,271 @@
+/*DEFAULT CHARACTER SET utf8mb4;*/
+
+CREATE SCHEMA `record` DEFAULT CHARACTER SET utf8mb4 
+COLLATE utf8mb4_general_ci;
+
+use record;
+
+/*==============================================================*/
+CREATE TABLE user (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL COMMENT '用户名',
+    password VARCHAR(50) NOT NULL COMMENT '密码',
+    real_name VARCHAR(50) NULL COMMENT '真实姓名',
+    phone_no VARCHAR(11) NULL COMMENT '手机号',
+    email VARCHAR(50) NULL COMMENT '邮箱',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    last_login_ip VARCHAR(46) NULL COMMENT '最后一次登录IP',
+    last_login_time DATETIME NULL DEFAULT NULL COMMENT '最后一次登录时间',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE (username)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='用户表';
+
+/*==============================================================*/
+CREATE TABLE role (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL COMMENT '名称',
+    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE (name)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='角色表';
+
+/*==============================================================*/
+CREATE TABLE menu (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL COMMENT '名称',
+    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    sequence INT(11) NOT NULL COMMENT '菜单序号',
+    parent_id INT(11) NOT NULL DEFAULT 0 COMMENT '父菜单id',
+    url VARCHAR(100) NULL COMMENT '菜单url',
+    icon VARCHAR(30) NULL COMMENT '菜单图标',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE (name)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='菜单表';
+
+
+/*==============================================================*/
+CREATE TABLE user_role (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT(11) UNSIGNED NOT NULL COMMENT '用户id',
+    role_id INT(11) UNSIGNED NOT NULL COMMENT '角色id',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE user_role_unique_key (user_id , role_id),
+    FOREIGN KEY (role_id)
+        REFERENCES role (id),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='用户角色关系表' ;
+
+/*==============================================================*/
+CREATE TABLE role_menu (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    role_id INT(11) UNSIGNED NOT NULL COMMENT '角色id',
+    menu_id INT(11) UNSIGNED NOT NULL COMMENT '菜单id',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE role_menu_unique_key (role_id , menu_id),
+    FOREIGN KEY (menu_id)
+        REFERENCES menu (id),
+    FOREIGN KEY (role_id)
+        REFERENCES role (id)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='角色菜单关系表';
+
+
+/*==============================================================*/
+/* Table: class                                                 */
+/*==============================================================*/
+
+CREATE TABLE class (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL COMMENT '名称',
+    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    state TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE (name)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='类表';
+
+
+CREATE TABLE field (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    class_id INT(11) UNSIGNED NOT NULL COMMENT '类id',
+    no TINYINT(1) NOT NULL COMMENT '编号',
+    name VARCHAR(50) NOT NULL COMMENT '名称',
+    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    state TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE field_unique_key_no (class_id , no),
+    UNIQUE field_unique_key_name (class_id , name),
+    FOREIGN KEY (class_id)
+        REFERENCES class (id)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='属性表';
+
+
+CREATE TABLE enum (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    field_id INT(11) UNSIGNED NOT NULL COMMENT '属性id',
+    no TINYINT(1) NOT NULL COMMENT '编号',
+    name VARCHAR(50) NOT NULL COMMENT '名称',
+    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '基本状态:1-启用；0-禁用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE enum_unique_key_no (field_id , no),
+    UNIQUE enum_unique_key_name (field_id , name),
+    FOREIGN KEY (field_id)
+        REFERENCES field (id)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='枚举表';
+  
+
+/*****************************/
+
+
+
+
+
+CREATE TABLE url (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL COMMENT '名称',
+    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    url VARCHAR(200) NOT NULL COMMENT 'url',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '基本状态:1-启用；0-禁用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE (name)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='api表';
+
+
+
+CREATE TABLE anchor (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    uid INT(11) UNSIGNED NOT NULL COMMENT 'UID',
+    name VARCHAR(50) NOT NULL COMMENT '用户名',
+    face VARCHAR(200) NULL COMMENT '头像',
+    sign VARCHAR(200) NULL COMMENT '签名',
+    sex TINYINT(1) NOT NULL DEFAULT - 1 COMMENT '性别1-男；0-女',
+    birthday VARCHAR(10) NULL COMMENT '生日',
+    room_id INT(11) UNSIGNED NULL COMMENT '直播间号',
+    follow TINYINT(1) NOT NULL DEFAULT 0 COMMENT '关注',
+    special TINYINT(1) NOT NULL DEFAULT 0 COMMENT '特别关注',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '基本状态:1-启用；0-禁用',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE (uid),
+    UNIQUE (room_id)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='主播表';
+
+
+CREATE TABLE room (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	room_id INT(11) UNSIGNED NOT NULL COMMENT '直播间号',
+    uid INT(11) UNSIGNED NOT NULL COMMENT 'UID',
+	tags VARCHAR(200) NOT NULL COMMENT '标签',
+	background VARCHAR(200) NOT NULL COMMENT '背景',
+	news VARCHAR(200) NOT NULL COMMENT '公告',
+	room_status TINYINT(1) NOT NULL DEFAULT 1 COMMENT '直播间状态',
+	end_time DATETIME NULL COMMENT '结束时间',
+    live_status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '直播状态',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '基本状态:1-启用；0-禁用',
+    record TINYINT(1) NOT NULL DEFAULT 0 COMMENT '录制:1-启用；0-禁用',
+    description VARCHAR(1000) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+	UNIQUE (room_id),
+	UNIQUE (uid)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='直播间表';
+
+
+
+
+CREATE TABLE live (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    uid INT(11) UNSIGNED NOT NULL COMMENT 'UID',
+	room_id INT(11) UNSIGNED NOT NULL COMMENT '直播间号',
+    title VARCHAR(200) NULL COMMENT '标题',
+	cover VARCHAR(200) NULL COMMENT '封面',    
+    start_time DATETIME NULL COMMENT '直播开始时间',
+	end_time DATETIME NULL COMMENT '直播结束时间',
+    duration TIME NULL COMMENT '时长',
+    area_name VARCHAR(50) NULL COMMENT '分区',
+    parent_area_name VARCHAR(50) NULL COMMENT '父分区',
+    keyframe VARCHAR(200) NULL COMMENT '关键帧',        
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '直播状态',
+    description VARCHAR(1000) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='直播表';
+
+
+CREATE TABLE record (
+    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    live_id INT(11) UNSIGNED NOT NULL COMMENT '直播id',
+    uid INT(11) UNSIGNED NOT NULL COMMENT 'UID',
+	room_id INT(11) UNSIGNED NOT NULL COMMENT '直播间号',        
+	start_time DATETIME NULL COMMENT '录播开始时间',
+	end_time DATETIME NULL COMMENT '录播结束时间',
+	duration TIME NULL COMMENT '时长',
+    url VARCHAR(400) NOT NULL COMMENT '源地址',
+    path VARCHAR(200) NOT NULL COMMENT '文件地址',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '录播状态',
+	thread_name VARCHAR(100) NOT NULL COMMENT '线程名称',
+    description VARCHAR(100) NULL COMMENT '描述',
+    insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
+    insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
+    update_id INT(11) UNSIGNED NULL COMMENT '更新人id',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+	FOREIGN KEY (live_id)
+        REFERENCES live (id)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='录播表';
+
