@@ -1,20 +1,16 @@
 package com.common.api;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-import com.bilibili.entity.outer.User;
-import com.bilibili.entity.outer.RoomInfo;
-import com.bilibili.entity.outer.RoomBaseInfo;
-import com.bilibili.util.Api;
+import com.common.base.entity.Result;
+import com.record.entity.Anchor;
+import com.record.service.AnchorService;
 
 /**
  * 
@@ -48,17 +44,10 @@ public class ApiController {
 	 */
 
 	@Autowired
-	RestTemplate restTemplate;
+	AnchorService anchorService;
 
-
-	@GetMapping("test")
-	public Object login(HttpServletRequest request, HttpServletResponse response){
-		/*int uid = 2154078;
-		User user= Api.getUserInfo(uid);
-		Room room = Api.getRoomInfo(uid);
-		Live live=Api.getLiveInfo(room.getRoomid());*/
-		Object object=Api.getRoomPlayInfo(614957);
-		return null;
-		
+	@GetMapping("saveAnchor/{uid}")
+	public Result<Anchor> saveAnchor(@PathVariable Integer uid) {
+		return anchorService.saveFromUid(uid);
 	}
 }

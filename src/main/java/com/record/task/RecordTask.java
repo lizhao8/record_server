@@ -30,7 +30,7 @@ public class RecordTask {
 	int count = 0;
 
 	// @Scheduled(cron = "0 */1 * * * ?")
-	@Scheduled(fixedDelay = 1000)
+	@Scheduled(fixedDelay = 1000*60)
 	public void unLiveCheckTask() {
 		List<Room> roomList = roomService.getEnableList(Room.liveStatus_unlive);
 
@@ -43,7 +43,7 @@ public class RecordTask {
 		}
 	}
 
-	@Scheduled(fixedDelay = 10000)
+	@Scheduled(fixedDelay = 1000*60)
 	public void liveingCheckTask() {
 		List<Room> roomList = roomService.getEnableList(Room.liveStatus_living);
 

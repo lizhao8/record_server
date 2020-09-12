@@ -5,6 +5,6 @@ import com.common.base.entity.NameLableEntity;
 import lombok.Data;
 
 @Data
-public class Class extends NameLableEntity {
+public class Entity extends NameLableEntity {
 	
 }

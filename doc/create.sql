@@ -29,7 +29,7 @@ CREATE TABLE user (
 CREATE TABLE role (
     id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL COMMENT '名称',
-    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    label VARCHAR(50) NOT NULL COMMENT '标签',
     status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
     description VARCHAR(100) NULL COMMENT '描述',
     insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
@@ -44,7 +44,7 @@ CREATE TABLE role (
 CREATE TABLE menu (
     id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL COMMENT '名称',
-    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    label VARCHAR(50) NOT NULL COMMENT '标签',
     sequence INT(11) NOT NULL COMMENT '菜单序号',
     parent_id INT(11) NOT NULL DEFAULT 0 COMMENT '父菜单id',
     url VARCHAR(100) NULL COMMENT '菜单url',
@@ -96,14 +96,14 @@ CREATE TABLE role_menu (
 
 
 /*==============================================================*/
-/* Table: class                                                 */
+/* Table: entity                                                 */
 /*==============================================================*/
 
-CREATE TABLE class (
+CREATE TABLE entity (
     id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL COMMENT '名称',
-    lable VARCHAR(50) NOT NULL COMMENT '标签',
-    state TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
+    label VARCHAR(50) NOT NULL COMMENT '标签',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
     description VARCHAR(100) NULL COMMENT '描述',
     insert_id INT(11) NOT NULL DEFAULT 0 COMMENT '插入人id',
     insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
@@ -116,21 +116,23 @@ CREATE TABLE class (
 
 CREATE TABLE field (
     id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    class_id INT(11) UNSIGNED NOT NULL COMMENT '类id',
+    entity_id INT(11) UNSIGNED NOT NULL COMMENT '类id',
     no TINYINT(1) NOT NULL COMMENT '编号',
     name VARCHAR(50) NOT NULL COMMENT '名称',
-    lable VARCHAR(50) NOT NULL COMMENT '标签',
-    state TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
+    label VARCHAR(50) NOT NULL COMMENT '标签',
+    type_id TINYINT(1) NOT NULL COMMENT '类型',
+	width INT(11) UNSIGNED NOT NULL COMMENT '宽度',
+    status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '状态:1-启用；0-停用',
     description VARCHAR(100) NULL COMMENT '描述',
     insert_id INT(11) NOT NULL DEFAULT 0 COMMENT '插入人id',
     insert_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
     update_id INT(11) NULL COMMENT '更新人id',
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id),
-    UNIQUE field_unique_key_no (class_id , no),
-    UNIQUE field_unique_key_name (class_id , name),
-    FOREIGN KEY (class_id)
-        REFERENCES class (id)
+    UNIQUE field_unique_key_no (entity_id , no),
+    UNIQUE field_unique_key_name (entity_id , name),
+    FOREIGN KEY (entity_id)
+        REFERENCES entity (id)
 )  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8MB4 COMMENT='属性表';
 
 
@@ -139,7 +141,7 @@ CREATE TABLE enum (
     field_id INT(11) UNSIGNED NOT NULL COMMENT '属性id',
     no TINYINT(1) NOT NULL COMMENT '编号',
     name VARCHAR(50) NOT NULL COMMENT '名称',
-    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    label VARCHAR(50) NOT NULL COMMENT '标签',
     status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '基本状态:1-启用；0-禁用',
     description VARCHAR(100) NULL COMMENT '描述',
     insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
@@ -163,7 +165,7 @@ CREATE TABLE enum (
 CREATE TABLE url (
     id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL COMMENT '名称',
-    lable VARCHAR(50) NOT NULL COMMENT '标签',
+    label VARCHAR(50) NOT NULL COMMENT '标签',
     url VARCHAR(200) NOT NULL COMMENT 'url',
     status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '基本状态:1-启用；0-禁用',
     description VARCHAR(100) NULL COMMENT '描述',
@@ -230,13 +232,13 @@ CREATE TABLE live (
     uid INT(11) UNSIGNED NOT NULL COMMENT 'UID',
 	room_id INT(11) UNSIGNED NOT NULL COMMENT '直播间号',
     title VARCHAR(200) NULL COMMENT '标题',
-	cover VARCHAR(200) NULL COMMENT '封面',    
+	cover VARCHAR(200) NULL COMMENT '封面',
     start_time DATETIME NULL COMMENT '直播开始时间',
 	end_time DATETIME NULL COMMENT '直播结束时间',
     duration TIME NULL COMMENT '时长',
     area_name VARCHAR(50) NULL COMMENT '分区',
     parent_area_name VARCHAR(50) NULL COMMENT '父分区',
-    keyframe VARCHAR(200) NULL COMMENT '关键帧',        
+    keyframe VARCHAR(200) NULL COMMENT '关键帧',
     status TINYINT(1) NOT NULL DEFAULT 0 COMMENT '直播状态',
     description VARCHAR(1000) NULL COMMENT '描述',
     insert_id INT(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '插入人id',
@@ -251,7 +253,7 @@ CREATE TABLE record (
     id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     live_id INT(11) UNSIGNED NOT NULL COMMENT '直播id',
     uid INT(11) UNSIGNED NOT NULL COMMENT 'UID',
-	room_id INT(11) UNSIGNED NOT NULL COMMENT '直播间号',        
+	room_id INT(11) UNSIGNED NOT NULL COMMENT '直播间号',
 	start_time DATETIME NULL COMMENT '录播开始时间',
 	end_time DATETIME NULL COMMENT '录播结束时间',
 	duration TIME NULL COMMENT '时长',

@@ -12,11 +12,13 @@ import lombok.Data;
 public class HttpHeader {
 	private String userAgent;
 	private String accept;
+	private String cookie;
 
 	public List<Header> toList() {
 		List<Header> list = new ArrayList<Header>();
 		list.add(new BasicHeader("User-Agent", userAgent));
 		list.add(new BasicHeader("Accept", accept));
+		list.add(new BasicHeader("Cookie", cookie));
 		return list;
 	}
 }

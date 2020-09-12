@@ -30,7 +30,7 @@ WHERE
         AND m.status = 1
         AND m.parent_id = 0
         AND u.id = #{userId}
-ORDER BY m.seq		
+ORDER BY m.sequence		
 	</select>
 
 	<select id="getByParentId" parameterType="map"
@@ -52,7 +52,7 @@ WHERE
         AND m.status = 1
         AND m.parent_id = #{parentId}
         AND u.id = #{userId}
-ORDER BY m.seq
+ORDER BY m.sequence
 	</select>
 
 </mapper>  

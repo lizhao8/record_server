@@ -3,9 +3,9 @@ package com.common.service;
 import org.springframework.stereotype.Service;
 
 import com.common.base.service.BaseService;
-import com.common.entity.Class;
+import com.common.entity.Entity;
 
 @Service
-public class ClassService extends BaseService<Class> {
+public class EntityService extends BaseService<Entity> {
 
 }
