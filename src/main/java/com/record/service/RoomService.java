@@ -51,40 +51,46 @@ public class RoomService extends BaseService<Room> {
 			this.update(room);
 			Live live = new Live(roomInfo.getRoom_info());
 			live.setStatus(Room.liveStatus_living);
-			Live live_query=new Live();
+			Live live_query = new Live();
 			live_query.setRoomId(roomId);
-			live_query.setStartTime(live.getStartTime());			
-			live_query=liveMapper.query(live_query);
-			if(live_query!=null) {
+			live_query.setStartTime(live.getStartTime());
+			live_query = liveMapper.query(live_query);
+			if (live_query != null) {
 				live.setId(live_query.getId());
 				liveMapper.update(live);
-			}else {
+			} else {
 				liveMapper.save(live);
 			}
-			
+
 			int uid = room.getUid();
 			log.info("用户:[" + room.getAnchor().getName() + "(" + uid + ")]直播中~~~");
-			if (room.getRecord() == Room.ENABLE) {
-				RoomPlay roomPlay = Api.getRoomPlayInfo(roomId);
-				Play_url playUrl = roomPlay.getPlay_url();
-				List<Durl> durlList = playUrl.getDurl();
-				int urlIndex = 1;
-				if (room.getAnchor().getSpecial() == Anchor.ENABLE) {
-					urlIndex = durlList.size();
-				}
-				for (int i = 0; i < urlIndex; i++) {
-					Durl durl = durlList.get(i);
-					String url = durl.getUrl();
-					String threadName = RecordTask.name + "_" + uid + "_" + roomId + "_" + (i + 1);
-					Record record = new Record();
-					record.setLiveId(live.getId());
-					record.setUid(uid);
-					record.setRoomId(roomId);
-					record.setUrl(url);
-					record.setThreadName(threadName);
-					record.setName(room.getAnchor().getName());
-					new RecordThread(record).start();
-				}
+			startRecord(room, live);
+		}
+	}
+
+	public void startRecord(Room room, Live live) {
+		int roomId = room.getRoomId();
+		int uid = room.getUid();
+		if (room.getRecord() == Room.ENABLE) {
+			RoomPlay roomPlay = Api.getRoomPlayInfo(room.getRoomId());
+			Play_url playUrl = roomPlay.getPlay_url();
+			List<Durl> durlList = playUrl.getDurl();
+			int urlIndex = 1;
+			if (room.getAnchor().getSpecial() == Anchor.ENABLE) {
+				urlIndex = durlList.size();
+			}
+			for (int i = 0; i < urlIndex; i++) {
+				Durl durl = durlList.get(i);
+				String url = durl.getUrl();
+				String threadName = RecordTask.name + "_" + uid + "_" + roomId + "_" + (i + 1);
+				Record record = new Record();
+				record.setLiveId(live.getId());
+				record.setUid(uid);
+				record.setRoomId(roomId);
+				record.setUrl(url);
+				record.setThreadName(threadName);
+				record.setName(room.getAnchor().getName());
+				new RecordThread(record).start();
 			}
 		}
 	}
@@ -93,13 +99,18 @@ public class RoomService extends BaseService<Room> {
 		int uid = room.getUid();
 		RoomBaseInfo roomBaseInfo = Api.getRoomBaseInfo(uid);
 		short liveStatus = roomBaseInfo.getLiveStatus();
+		Live live = new Live();
+		live.setUid(uid);
+		live.setStatus(Live.RUNNING);
+		live = liveMapper.query(live);
+		Record record = new Record();
+		record.setUid(uid);
+		record.setStatus(Room.RUNNING);
+		record = recordMapper.query(record);
 		if (Room.liveStatus_unlive == liveStatus) {
 			room.setLiveStatus(liveStatus);
 			this.update(room);
-			Live live = new Live();
-			live.setUid(uid);
-			live.setStatus(Live.RUNNING);
-			live = liveMapper.query(live);
+
 			if (live != null) {
 				live.endTime(new Date());
 				live.setStatus(Live.STOP);
@@ -107,17 +118,27 @@ public class RoomService extends BaseService<Room> {
 			}
 			log.info("用户:[" + room.getAnchor().getName() + "(" + room.getUid() + ")]直播已结束~~~");
 
-			Record record = new Record();
-			record.setUid(uid);
-			record.setStatus(Room.RUNNING);
-			record = recordMapper.query(record);
 			if (record != null) {
 				RecordThread thread = RecordTask.threadGroup.getThread(record.getThreadName());
-				if(thread!=null) {
+				if (thread != null) {
 					thread.stopRecord();
-					log.info(record.getThreadName()+"已开始停止");
+					log.info(record.getThreadName() + "已开始停止");
 				}
 			}
+		} else {
+			if (room.getRecord() == Room.ENABLE) {
+				if (record != null) {
+					RecordThread thread = RecordTask.threadGroup.getThread(record.getThreadName());
+					if (thread == null) {
+						record.endTime(new Date());
+						record.setStatus(Record.STOP);
+						recordMapper.update(record);
+					}
+				} else {
+					startRecord(room, live);
+				}
+			}
+
 		}
 	}
 
